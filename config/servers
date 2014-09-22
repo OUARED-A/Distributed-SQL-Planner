@@ -1,0 +1,130 @@
+[
+  {
+    "id": "CL",
+    "cpu": 0.002,
+    "io": 0.002,
+    "netin": 0.0,
+    "netout": 0.0,
+    "tables": []
+  },
+  {
+    "id": "H",
+    "cpu": 0.001,
+    "io": 0.001,
+    "netin": 0.0002,
+    "netout": 0.0002,
+    "tables": [
+      {
+        "name": "hospital",
+        "columns": ["patient", "disease", "treatment"],
+        "authorizations": [
+          {
+            "server": "H",
+            "v": ["patient", "disease", "treatment"],
+            "e": []
+          },
+          {
+            "server": "I",
+            "v": ["patient"],
+            "e": ["disease", "treatment"]
+          },
+          {
+            "server": "D",
+            "v": [],
+            "e": ["patient", "disease", "treatment"]
+          },
+          {
+            "server": "CL",
+            "v": ["patient", "disease", "treatment"],
+            "e": []
+          },
+          {
+            "server": "",
+            "v": [],
+            "e": ["patient", "disease", "treatment"]
+          }
+        ]
+      }
+    ]
+  },
+  {
+    "id": "I",
+    "cpu": 0.0012,
+    "io": 0.0012,
+    "netin": 0.0005,
+    "netout": 0.0005,
+    "tables": [
+      {
+        "name": "insurance",
+        "columns": ["customer", "premium"],
+        "authorizations": [
+          {
+            "server": "H",
+            "v": [],
+            "e": ["customer", "premium"]
+          },
+          {
+            "server": "I",
+            "v": ["customer", "premium"],
+            "e": []
+          },
+          {
+            "server": "D",
+            "v": [],
+            "e": ["customer", "premium"]
+          },
+          {
+            "server": "CL",
+            "v": ["customer", "premium"],
+            "e": []
+          },
+          {
+            "server": "",
+            "v": [],
+            "e": []
+          }
+        ]
+      }
+    ]
+  },
+  {
+    "id": "D",
+    "cpu": 0.002,
+    "io": 0.0008,
+    "netin": 0.0005,
+    "netout": 0.0005,
+    "tables": [
+      {
+        "name": "dhs",
+        "columns": ["SSN", "employer", "salary"],
+        "authorizations": [
+          {
+            "server": "H",
+            "v": [],
+            "e": ["SSN", "employer", "salary"]
+          },
+          {
+            "server": "I",
+            "v": ["SSN", "employer"],
+            "e": ["salary"]
+          },
+          {
+            "server": "D",
+            "v": ["SSN", "employer", "salary"],
+            "e": []
+          },
+          {
+            "server": "CL",
+            "v": ["SSN", "employer", "salary"],
+            "e": []
+          },
+          {
+            "server": "",
+            "v": [],
+            "e": ["SSN", "salary"]
+          }
+        ]
+      }
+    ]
+  }
+]
