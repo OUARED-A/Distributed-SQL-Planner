@@ -1,16 +1,20 @@
 jupiter-py
 ==========
 
-Distributed SQL Planner
+Distributed SQL Planner based on [`optiq`](https://github.com/apache/incubator-optiq) as planner and python 2.7.
 
 ### Generate a SQLite test database
+
+The default configuration in `config/servers` uses a database of patients, that can be generated:
 
     $ python db/genpatients.py
     Database test.db created with 100000 patients
     
 ### Optimize a simple query
 
-    $ ./jupiter.py db/test.db 'SELECT * FROM "hospital"
+In order to optimize a query, execute `jupiter.py` using the name of the database that will be used to read the schema, and the query you want to optimize as parameters.
+
+    $ ./jupiter.py test.db 'SELECT * FROM "hospital"
     === Parsed Tree ===
     1: {u'cumulativeCost': {u'rows': 200000.0, u'cpu': 100001.0, u'io': 300000.0}, u'inputs': [u'0'], u'relOp': u'JdbcToEnumerableConverter', u'cols': [u'patient', u'disease', u'treatment'], u'rowCount': 100000.0, u'cost': {u'rows': 100000.0, u'cpu': 0.0, u'io': 0.0}, u'id': u'1'} 
       0: {u'cumulativeCost': {u'rows': 100000.0, u'cpu': 100001.0, u'io': 300000.0}, u'inputs': [], u'relOp': u'JdbcTableScan', u'cols': [u'patient', u'disease', u'treatment'], u'rowCount': 100000.0, u'cost': {u'rows': 100000.0, u'cpu': 100001.0, u'io': 300000.0}, u'table': [u'main', u'hospital'], u'id': u'0'} 
@@ -164,13 +168,17 @@ There must be a *server* named `CL` which is the *client* on which the root of t
 
 * All the names that are not uppercase must be enclosed in quotes.
 * The names of the columns must be unique.
-* It works with python 2.x
-* It works with projections, selections and aggregates.
-* It uses `optiq` as planner.
+* It works with projections, single selections and aggregates.
+
+Jupiter invokes the optiq planner to generate a plan that is optimal on a single machine, then jupiter analyzes which servers are allowed to execute the every relational node and it select the combination that satisfies the authorization constraints while minimizing the total cost (based on the configuration).
 
 
 ### Examples
 
-    ./jupiter.py db/test.db 'SELECT "patient", "disease", "premium" FROM "hospital" AS "H" JOIN "insurance" AS "I" ON "H"."patient" = "I"."customer"'
-    
-    ./jupiter.py db/test.db 'SELECT "patient", "disease", "premium" FROM "hospital" AS "H" JOIN "insurance" AS "I" ON "H"."patient" = "I"."customer" WHERE "H"."patient" > 1000'
+* Join two tables and project columns:
+
+        ./jupiter.py test.db 'SELECT "patient", "disease", "premium" FROM "hospital" AS "H" JOIN "insurance" AS "I" ON "H"."patient" = "I"."customer"'
+
+* Join two tables, project columns and filter the results:
+
+        ./jupiter.py test.db 'SELECT "patient", "disease", "premium" FROM "hospital" AS "H" JOIN "insurance" AS "I" ON "H"."patient" = "I"."customer" WHERE "H"."patient" > 1000'
