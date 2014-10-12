@@ -41,8 +41,12 @@ class Servers:
 
     @memo
     def _get_authz(self, column, srv_id):
-        authzs = self._table_with(column).authorizations
-        return authzs.get(srv_id, authzs.get('*', Authorization(None, [], [])))
+        tbl = self._table_with(column)
+        authzs = table.authorizations
+        try:
+            return authzs.get(srv_id, authzs['*'])
+        except KeyError:
+            raise 'No authorization for server %s and table %s' % (srv_id, tbl)
 
     def _check_v(self, cols, srv_id):
         return all(col in self._get_authz(col, srv_id).v for col in cols)
