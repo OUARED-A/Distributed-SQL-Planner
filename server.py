@@ -42,7 +42,7 @@ class Servers:
     @memo
     def _get_authz(self, column, srv_id):
         authzs = self._table_with(column).authorizations
-        return authzs.get(srv_id, authzs.get('', Authorization(None, [], [])))
+        return authzs.get(srv_id, authzs.get('*', Authorization(None, [], [])))
 
     def _check_v(self, cols, srv_id):
         return all(col in self._get_authz(col, srv_id).v for col in cols)

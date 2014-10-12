@@ -39,7 +39,7 @@
             "e": []
           },
           {
-            "server": "",
+            "server": "*",
             "v": [],
             "e": ["patient", "disease", "treatment"]
           }
@@ -79,7 +79,7 @@
             "e": []
           },
           {
-            "server": "",
+            "server": "*",
             "v": [],
             "e": []
           }
@@ -119,7 +119,7 @@
             "e": []
           },
           {
-            "server": "",
+            "server": "*",
             "v": [],
             "e": ["SSN", "salary"]
           }

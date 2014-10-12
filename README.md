@@ -32,6 +32,7 @@ In order to optimize a query, execute `jupiter.py` using the name of the databas
 
 The configuration file is located at `config/servers`. The configuration define for each server the tables, the cost for cpu, io, network-in and network-out and the authorization that other server have on each table.
 There must be a *server* named `CL` which is the *client* on which the root of the relational algebra tree is executed.
+The server named `*` is used as a default when a specific authorization for a server is not found.
 
     [
       {
@@ -74,7 +75,7 @@ There must be a *server* named `CL` which is the *client* on which the root of t
                 "e": []
               },
               {
-                "server": "",
+                "server": "*",
                 "v": [],
                 "e": ["patient", "disease", "treatment"]
               }
@@ -114,7 +115,7 @@ There must be a *server* named `CL` which is the *client* on which the root of t
                 "e": []
               },
               {
-                "server": "",
+                "server": "*",
                 "v": [],
                 "e": []
               }
@@ -154,7 +155,7 @@ There must be a *server* named `CL` which is the *client* on which the root of t
                 "e": []
               },
               {
-                "server": "",
+                "server": "*",
                 "v": [],
                 "e": ["SSN", "salary"]
               }
