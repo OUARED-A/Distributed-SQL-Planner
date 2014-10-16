@@ -42,7 +42,7 @@ class Servers:
     @memo
     def _get_authz(self, column, srv_id):
         tbl = self._table_with(column)
-        authzs = table.authorizations
+        authzs = tbl.authorizations
         try:
             return authzs.get(srv_id, authzs['*'])
         except KeyError:
