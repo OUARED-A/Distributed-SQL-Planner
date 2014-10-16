@@ -2,7 +2,7 @@ URL      = https://github.com/electrum/tpch-dbgen/archive/master.zip
 ZIPBALL  = tpch-dbgen.zip
 DATABASE = tpch.db
 TABLES   = nation region part supplier partsupp customer orders lineitem
-SCALE    = 1
+SCALE    = 0.1
 
 all: $(DATABASE)
 
