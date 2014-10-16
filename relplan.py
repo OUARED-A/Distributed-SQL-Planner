@@ -6,7 +6,7 @@ from server import Servers
 from utils import memo, listify
 
 
-class Plan(namedtuple('Plan', 'root profile executers costs profiles rows')):
+class Plan(namedtuple('Plan', 'root profile executers costs profiles rows node')):
 
     def totalcost(self):
         return sum(self.costs.values())
@@ -62,7 +62,9 @@ class Planner:
 
     @memo
     def get_plans(self, node):
-        return self._planfn(node.get('relOp'))(node)
+        plans = self._planfn(node.get('relOp'))(node)
+        print '#%d plans for node %s' % (len(plans), node.get('id'))
+        return plans
 
     def get_best_plan(self, node):
         plans = self.get_plans(node)
@@ -90,4 +92,4 @@ class Planner:
         profiles[root] = profile
         costs = sum((plan.costs for plan in inputplans),
             self.makecost(node, inputplans, server))
-        return Plan(root, profile, executers, costs, profiles, rows)
+        return Plan(root, profile, executers, costs, profiles, rows, node)

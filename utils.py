@@ -34,5 +34,9 @@ def calldecorator(call, default=None):
         return _func
     return decorator
 
+
+def flat(lst):
+    return sum((flat(x) if isinstance(x, list) else [x] for x in lst), [])
+
 listify = calldecorator(list)
 setify = calldecorator(set)
