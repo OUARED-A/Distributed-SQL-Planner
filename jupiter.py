@@ -21,9 +21,11 @@ def main():
     print '=== Parsed Tree ==='
     print root
 
-    print '=== Plans ==='
+    print '=== Generation ==='
     planner = Planner(servers)
     plans = planner.get_plans(root)
+
+    print '\n=== Plans ==='
     for plan in sorted(plans, key=methodcaller('totalcost'), reverse=True):
         print plan
 
