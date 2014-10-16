@@ -3,12 +3,6 @@ jupiter-py
 
 Distributed SQL Planner based on [`optiq`](https://github.com/apache/incubator-optiq) as planner and python 2.7.
 
-### Generate a SQLite test database
-
-The default configuration in `config/servers` uses a database of patients, that can be generated:
-
-    $ python db/genpatients.py
-    Database test.db created with 100000 patients
 
 ### Usage
 
@@ -25,6 +19,14 @@ The default configuration in `config/servers` uses a database of patients, that 
       -h, --help    show this help message and exit
       -n, --no-opt  Convert SQL to a relational plan but do not optimize
       -j, --json    Output the result as JSON
+
+### Generate a SQLite test database
+
+The default configuration in `config/servers` uses a database of patients, that can be generated:
+
+    $ python db/genpatients.py
+    Database test.db created with 100000 patients
+
     
 ### Optimize a simple query
 
