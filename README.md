@@ -9,6 +9,22 @@ The default configuration in `config/servers` uses a database of patients, that 
 
     $ python db/genpatients.py
     Database test.db created with 100000 patients
+
+### Usage
+
+    usage: jupiter.py [-h] [-n] [-j] SERVERS DB SQL
+    
+    Use Optiq to get a relational plan from SQL statement.
+    
+    positional arguments:
+      SERVERS       Servers configuration file
+      DB            SQLite database to use as schema source
+      SQL           SQL query (quote it as a single string)
+    
+    optional arguments:
+      -h, --help    show this help message and exit
+      -n, --no-opt  Convert SQL to a relational plan but do not optimize
+      -j, --json    Output the result as JSON
     
 ### Optimize a simple query
 
@@ -165,6 +181,7 @@ The server named `*` is used as a default when a specific authorization for a se
       }
     ]
 
+
 ### Other information
 
 * The names of the columns must be unique.
@@ -182,3 +199,7 @@ Jupiter invokes the optiq planner to generate a plan that is optimal on a single
 * Join two tables, project columns and filter the results:
 
         ./jupiter.py config/servers test.db 'SELECT patient, disease, premium FROM hospital AS H JOIN insurance AS I ON H.patient = I.customer WHERE H.patient > 1000'
+
+### TPC-H database
+
+You can generate a SQLite TPC-H database. To do that check the README in the tpch folder.
