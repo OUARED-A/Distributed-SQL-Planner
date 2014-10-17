@@ -44,9 +44,9 @@ class Servers:
         tbl = self._table_with(column)
         authzs = tbl.authorizations
         try:
-            return authzs.get(srv_id, authzs['*'])
+            return authzs.get(srv_id, None) or authzs['*']
         except KeyError:
-            raise 'No authorization for server %s and table %s' % (srv_id, tbl)
+            raise KeyError('No authz server:%s table:%s' % (srv_id, tbl.name))
 
     def _check_v(self, cols, srv_id):
         return all(col in self._get_authz(col, srv_id).v for col in cols)
