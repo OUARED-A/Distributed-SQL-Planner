@@ -1,0 +1,199 @@
+[
+  {
+    "id": "CL",
+    "cpu": 0.5,
+    "io": 0.02,
+    "netin": 0.02,
+    "netout": 0.5,
+    "tables": []
+  },
+  {
+    "id": "Google",
+    "cpu": 0.063,
+    "io": 0,
+    "netin": 0,
+    "netout": 0.01,
+    "tables": []
+  },
+  {
+    "id": "Amazon",
+    "cpu": 0.02,
+    "io": 0,
+    "netin": 0,
+    "netout": 0.01,
+    "tables": []
+  },
+  {
+    "id": "MS",
+    "cpu": 0.018,
+    "io": 0,
+    "netin": 0,
+    "netout": 0.087,
+    "tables": []
+  },
+  {
+    "id": "H",
+    "cpu": 0.55,
+    "io": 0.01,
+    "netin": 0.02,
+    "netout": 0.55,
+    "tables": [
+      {
+        "name": "hospital",
+        "columns": ["patient", "disease", "treatment"],
+        "authorizations": [
+          {
+            "server": "H",
+            "v": ["patient", "disease", "treatment"],
+            "e": []
+          },
+          {
+            "server": "I",
+            "v": ["patient"],
+            "e": ["disease", "treatment"]
+          },
+          {
+            "server": "D",
+            "v": [],
+            "e": ["patient", "disease", "treatment"]
+          },
+          {
+            "server": "CL",
+            "v": ["patient", "disease", "treatment"],
+            "e": []
+          },
+          {
+            "server": "Google",
+            "v": [],
+            "e": ["patient", "disease", "treatment"]
+          },
+          {
+            "server": "Amazon",
+            "v": ["disease"],
+            "e": ["patient", "treatment"]
+          },
+          {
+            "server": "MS",
+            "v": ["patient"],
+            "e": ["disease", "treatment"]
+          },
+          {
+            "server": "*",
+            "v": [],
+            "e": ["patient", "disease", "treatment"]
+          }
+        ]
+      }
+    ]
+  },
+  {
+    "id": "I",
+    "cpu": 0.72,
+    "io": 0.012,
+    "netin": 0.05,
+    "netout": 0.85,
+    "tables": [
+      {
+        "name": "insurance",
+        "columns": ["customer", "premium"],
+        "authorizations": [
+          {
+            "server": "H",
+            "v": [],
+            "e": ["customer", "premium"]
+          },
+          {
+            "server": "I",
+            "v": ["customer", "premium"],
+            "e": []
+          },
+          {
+            "server": "D",
+            "v": [],
+            "e": ["customer", "premium"]
+          },
+          {
+            "server": "CL",
+            "v": ["customer", "premium"],
+            "e": []
+          },
+          {
+            "server": "Google",
+            "v": [],
+            "e": ["customer", "premium"]
+          },
+          {
+            "server": "Amazon",
+            "v": ["customer"],
+            "e": ["premium"]
+          },
+          {
+            "server": "MS",
+            "v": ["customer","premium"],
+            "e": []
+          },
+          {
+            "server": "*",
+            "v": [],
+            "e": []
+          }
+        ]
+      }
+    ]
+  },
+  {
+    "id": "D",
+    "cpu": 0.9,
+    "io": 0.08,
+    "netin": 0.05,
+    "netout": 0.85,
+    "tables": [
+      {
+        "name": "dhs",
+        "columns": ["SSN", "employer", "salary"],
+        "authorizations": [
+          {
+            "server": "H",
+            "v": [],
+            "e": ["SSN", "employer", "salary"]
+          },
+          {
+            "server": "I",
+            "v": ["SSN", "employer"],
+            "e": ["salary"]
+          },
+          {
+            "server": "D",
+            "v": ["SSN", "employer", "salary"],
+            "e": []
+          },
+          {
+            "server": "CL",
+            "v": ["SSN", "employer", "salary"],
+            "e": []
+          },
+          {
+            "server": "Google",
+            "v": [],
+            "e": ["SSN", "employer", "salary"]
+          },
+          {
+            "server": "Amazon",
+            "v": [],
+            "e": ["SSN", "employer"]
+          },
+          {
+            "server": "MS",
+            "v": ["SSN"],
+            "e": []
+          },
+          {
+            "server": "*",
+            "v": [],
+            "e": ["SSN", "salary"]
+          }
+        ]
+      }
+    ]
+  }
+]
