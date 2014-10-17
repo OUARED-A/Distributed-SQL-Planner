@@ -1,3 +1,5 @@
+#!/usr/bin/env python
+
 from random import triangular
 from sqlite3 import connect
 import argparse
