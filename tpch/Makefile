@@ -8,9 +8,10 @@ all: $(DATABASE)
 
 dbgen:
 	@wget -O tpch.zip $(URL)`wget -qO- $(URL) | grep -Pom1 $(REGEX)`
-	@unzip tpch.zip
+	@unzip tpch.zip tpch*/dbgen/*
 	@rm tpch.zip
 	@mv tpch_*/dbgen dbgen
+	@rm -rf tpch_*
 
 dbgen/dbgen: dbgen
 	@cat dbgen/makefile.suite | \
