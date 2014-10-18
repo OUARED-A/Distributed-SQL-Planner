@@ -62,7 +62,7 @@ def join(node, inputs):
     assert len(inputs) == 2
     pl, pr = (input.profile for input in inputs)
     groups = _get_column_groups_from(node)
-    columns = set.union(*groups)
+    columns = set.union(*groups) if groups else set()
     sim = reduce(lambda sim, columns: sim.add(*columns), groups,
                  deepcopy(pl.sim).merge(pr.sim))
     profile = Profile(v=pl.v | pr.v, e=pl.e | pr.e, iv=pl.iv | pr.iv,
