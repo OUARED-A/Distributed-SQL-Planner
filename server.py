@@ -52,15 +52,15 @@ class Servers:
         return all(col in self._get_authz(col, srv_id).v for col in cols)
 
     def _check_e(self, cols, srv_id):
+        return all(col in self._get_authz(col, srv_id).e for col in cols)
+
+    def _check_v_or_e(self, cols, srv_id):
         return all(col in self._get_authz(col, srv_id).v or
                    col in self._get_authz(col, srv_id).e for col in cols)
 
     def _check_sim(self, profile, srv_id):
-        vs = reduce(set.union,
-            (profile.sim[v] for v in (profile.v | profile.iv)), set())
-        es = reduce(set.union,
-            (profile.sim[e] for e in (profile.e | profile.ie)), set())
-        return self._check_v(vs, srv_id) and self._check_e(es, srv_id)
+        return all(self._check_v(cols, srv_id) or self._check_e(cols, srv_id)
+                   for cols in profile.sim)
 
     def _encrypt_necessaries(self, profile, srv_id):
         notv = set(col for col in profile.v
@@ -70,5 +70,5 @@ class Servers:
     def authorize(self, profile, srv_id):
         profile = self._encrypt_necessaries(profile, srv_id)
         return profile if (self._check_v(profile.v | profile.iv, srv_id) and
-            self._check_e(profile.e | profile.ie, srv_id) and
+            self._check_v_or_e(profile.e | profile.ie, srv_id) and
             self._check_sim(profile, srv_id)) else None
