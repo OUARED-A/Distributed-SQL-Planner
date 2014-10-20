@@ -27,6 +27,7 @@ class eqclass(object):
         for eq in classes:
             for a, b in combinations(eq, 2):
                 self.add(a, b)
+        return self
 
     def __iter__(self):
         return iter(self._classes)
