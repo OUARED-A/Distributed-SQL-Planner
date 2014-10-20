@@ -46,13 +46,12 @@ def selection(node, inputs):
     pl = inputs[0].profile
 
     for columns in _get_column_groups_from(node):
-        if len(columns) > 1:             # update equivalence class
+        if len(columns) > 1:           # update equivalence class
             pl = pl._replace(sim=deepcopy(pl.sim).add(*columns))
-        if columns <= pl.v:              # both visible
+        if columns <= pl.e:            # both encrypted
+            pl = pl._replace(ie=pl.ie | columns)
+        elif columns <= pl.v | pl.e:   # if mixed require in iv
             pl = pl._replace(iv=pl.iv | columns)
-        elif columns <= (pl.v | pl.e):   # upgrade to encrypted
-            pl = pl._replace(v=pl.v - columns,
-                           e=pl.e | columns, ie=pl.ie | columns)
         else:
             raise ValueError('selected columns %s not in children' % columns)
     return pl
