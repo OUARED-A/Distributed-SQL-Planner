@@ -46,7 +46,7 @@ def selection(node, inputs):
     pl = inputs[0].profile
 
     for columns in _get_column_groups_from(node):
-        if not columns < pl.v | pl.e:
+        if not columns <= pl.v | pl.e:
             raise ValueError('some columns %s not in children' % columns)
         if len(columns) > 1:          # update equivalence class
             pl = pl._replace(sim=eqclass(columns).merge(pl.sim))
