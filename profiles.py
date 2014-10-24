@@ -2,7 +2,6 @@ from collections import namedtuple
 from operator import attrgetter
 from eqclass import eqclass
 from utils import flat
-from copy import deepcopy
 
 
 class Profile(namedtuple('Profile', 'v e iv ie sim')):
@@ -20,8 +19,8 @@ def _get_operands_from(field):
     return [flat(ops)] if field['op'] not in ('AND', 'OR') else ops
 
 
-def _get_column_groups_from(node, field='condition', cols=None):
-    operands = _get_operands_from(node.get(field))
+def _get_column_groups_from(node, field=None, cols=None):
+    operands = _get_operands_from(field or node.get('condition'))
     columns = cols or node.get('cols')
     return [set(map(columns.__getitem__, op)) for op in operands if op]
 
@@ -35,7 +34,8 @@ def tablescan(node, inputs):
 def projection(node, inputs):
     assert len(inputs) == 1
     pl = inputs[0].profile
-    exprs = _get_column_groups_from(node, 'exprs', inputs[0].node.get('cols'))
+    exprs = _get_column_groups_from(node, node.get('exprs'),
+                                    inputs[0].node.get('cols'))
     assert len(exprs) == 1
     fields = exprs[0]
     return pl._replace(v=pl.v & fields, e=pl.e & fields)
@@ -68,6 +68,9 @@ def join(node, inputs):
 
 def aggregate(node, inputs):
     assert len(inputs) == 1
+    exprs = filter(lambda col: col.startswith('EXPR$'), node.get('cols'))
+    aggs = node.get('aggs')
+    assert len(exprs) == len(aggs)
     return inputs[0].profile
 
 
