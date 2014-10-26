@@ -1,8 +1,13 @@
 from collections import namedtuple
 from operator import attrgetter
 from eqclass import eqclass
+from alias import Alias
 from utils import flat
 
+aliases = Alias(set)
+
+def antialias(columns):
+    return set(flat(map(aliases, columns)))
 
 class Profile(namedtuple('Profile', 'v e iv ie sim')):
 
@@ -15,6 +20,7 @@ def _get_operands_from(field):
     if isinstance(field, list): return [flat(map(_get_operands_from, field))]
     if not isinstance(field, dict): return [[]]
     if 'input' in field: return [[field['input']]]
+    if 'agg' in field: return [field['operands']]
     ops = [x for op in field['operands'] for x in _get_operands_from(op) if x]
     return [flat(ops)] if field['op'] not in ('AND', 'OR') else ops
 
@@ -45,7 +51,7 @@ def selection(node, inputs):
     assert len(inputs) == 1
     pl = inputs[0].profile
 
-    for columns in _get_column_groups_from(node):
+    for columns in map(antialias, _get_column_groups_from(node)):
         if not columns <= pl.v | pl.e:
             raise ValueError('some columns %s not in children' % columns)
         if len(columns) > 1:          # update equivalence class
@@ -68,10 +74,19 @@ def join(node, inputs):
 
 def aggregate(node, inputs):
     assert len(inputs) == 1
+    pl = inputs[0].profile
+
     exprs = filter(lambda col: col.startswith('EXPR$'), node.get('cols'))
     aggs = node.get('aggs')
     assert len(exprs) == len(aggs)
-    return inputs[0].profile
+    cols = inputs[0].node.get('cols')
+    for agg, expr in zip(aggs, exprs):
+        alias = set.union(*_get_column_groups_from(node, agg, cols))
+        if expr not in aliases:
+            aliases[expr] = alias
+        else:
+            assert aliases[expr] == alias
+    return pl
 
 
 def jdbctoenumerate(node, inputs):
