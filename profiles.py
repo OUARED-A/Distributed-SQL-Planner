@@ -4,23 +4,16 @@ from eqclass import eqclass
 from alias import Alias
 from utils import flat
 
-aliases = Alias(set)
-
-def antialias(columns):
-    return set(flat(map(aliases, columns)))
-
-class Profile(namedtuple('Profile', 'v e iv ie sim')):
-
-    @staticmethod
-    def build(node, inputs):
-        return _profiles[node.get('relOp')](node, inputs)
-
 
 def _get_operands_from(field):
-    if isinstance(field, list): return [flat(map(_get_operands_from, field))]
-    if not isinstance(field, dict): return [[]]
-    if 'input' in field: return [[field['input']]]
-    if 'agg' in field: return [field['operands']]
+    if isinstance(field, list):
+        return [flat(map(_get_operands_from, field))]
+    if not isinstance(field, dict):
+        return [[]]
+    if 'input' in field:
+        return [[field['input']]]
+    if 'agg' in field:
+        return [field['operands']]
     ops = [x for op in field['operands'] for x in _get_operands_from(op) if x]
     return [flat(ops)] if field['op'] not in ('AND', 'OR') else ops
 
@@ -34,7 +27,7 @@ def _get_column_groups_from(node, field=None, cols=None):
 def tablescan(node, inputs):
     assert not inputs
     return Profile(set(node.get('cols')),
-        set(), set(), set(), eqclass())
+                   set(), set(), set(), eqclass())
 
 
 def projection(node, inputs):
@@ -51,7 +44,7 @@ def selection(node, inputs):
     assert len(inputs) == 1
     pl = inputs[0].profile
 
-    for columns in map(antialias, _get_column_groups_from(node)):
+    for columns in map(Profile._antialias, _get_column_groups_from(node)):
         if not columns <= pl.v | pl.e:
             raise ValueError('some columns %s not in children' % columns)
         if len(columns) > 1:          # update equivalence class
@@ -82,10 +75,10 @@ def aggregate(node, inputs):
     cols = inputs[0].node.get('cols')
     for agg, expr in zip(aggs, exprs):
         alias = set.union(*_get_column_groups_from(node, agg, cols))
-        if expr not in aliases:
-            aliases[expr] = alias
+        if expr not in Profile._aliases:
+            Profile._aliases[expr] = alias
         else:
-            assert aliases[expr] == alias
+            assert Profile._aliases[expr] == alias
     return pl
 
 
@@ -94,11 +87,23 @@ def jdbctoenumerate(node, inputs):
     return inputs[0].profile
 
 
-_profiles = {
-    'JdbcTableScan': tablescan,
-    'JdbcProjectRel': projection,
-    'JdbcFilterRel': selection,
-    'JdbcJoinRel': join,
-    'JdbcAggregateRel': aggregate,
-    'JdbcToEnumerableConverter': jdbctoenumerate
-}
+class Profile(namedtuple('Profile', 'v e iv ie sim')):
+
+    _aliases = Alias(set)
+
+    _profiles = {
+        'JdbcTableScan': tablescan,
+        'JdbcProjectRel': projection,
+        'JdbcFilterRel': selection,
+        'JdbcJoinRel': join,
+        'JdbcAggregateRel': aggregate,
+        'JdbcToEnumerableConverter': jdbctoenumerate
+    }
+
+    @classmethod
+    def _antialias(cls, columns):
+        return set(flat(map(cls._aliases, columns)))
+
+    @classmethod
+    def build(cls, node, inputs):
+        return cls._profiles[node.get('relOp')](node, inputs)
