@@ -76,7 +76,7 @@ def aggregate(node, inputs):
     assert len(inputs) == 1
     pl = inputs[0].profile
 
-    exprs = filter(lambda col: col.startswith('EXPR$'), node.get('cols'))
+    exprs = filter(lambda col: '$' in col, node.get('cols'))
     aggs = node.get('aggs')
     assert len(exprs) == len(aggs)
     cols = inputs[0].node.get('cols')
