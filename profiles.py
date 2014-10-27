@@ -36,7 +36,7 @@ def projection(node, inputs):
     exprs = _get_column_groups_from(node, node.get('exprs'),
                                     inputs[0].node.get('cols'))
     assert len(exprs) == 1
-    fields = exprs[0]
+    fields = Profile._antialias(exprs[0])
     return pl._replace(v=pl.v & fields, e=pl.e & fields)
 
 
@@ -60,7 +60,8 @@ def selection(node, inputs):
 def join(node, inputs):
     assert len(inputs) == 2
     pl, pr = (input.profile for input in inputs)
-    sim = eqclass(_get_column_groups_from(node)).merge(pl.sim).merge(pr.sim)
+    sim = eqclass(map(Profile._antialias, _get_column_groups_from(node))
+                  ).merge(pl.sim).merge(pr.sim)
     return Profile(v=pl.v | pr.v, e=pl.e | pr.e, iv=pl.iv | pr.iv,
                    ie=pl.ie | pr.ie, sim=sim)
 
@@ -74,7 +75,8 @@ def aggregate(node, inputs):
     assert len(exprs) == len(aggs)
     cols = inputs[0].node.get('cols')
     for agg, expr in zip(aggs, exprs):
-        alias = set.union(*_get_column_groups_from(node, agg, cols))
+        groups = _get_column_groups_from(node, agg, cols) or [set()]
+        alias = set.union(*groups)
         if expr not in Profile._aliases:
             Profile._aliases[expr] = alias
         else:
