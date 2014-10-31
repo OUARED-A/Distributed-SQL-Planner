@@ -58,10 +58,11 @@ if __name__ == '__main__':
         logging.basicConfig(level=logging.INFO, format='%(message)s')
 
     confs = [os.path.join(args.CONF, c) for c in sorted(os.listdir(args.CONF))]
-    logging.info(confs)
+    queries = [os.path.join(args.SQL, q) for q in sorted(os.listdir(args.SQL))]
+    logging.info('CONFS: %s' % confs)
+    logging.info('QUERIES: %s' % queries)
 
-    calls = [(query, open(os.path.join(args.SQL, query)).read(), args.DB,
-              confs, args.verbose) for query in sorted(os.listdir(args.SQL))]
+    call = [(q, open(q).read(), args.DB, confs, args.verbose) for q in queries]
 
     logging.info('Staring execution on %d threads', args.threads)
-    print '\n'.join(Pool(args.threads).map(runquerywrapper, calls))
+    print '\n'.join(Pool(args.threads).map(runquerywrapper, call))
