@@ -1,5 +1,6 @@
 #!/usr/bin/env python
 
+from multiprocessing import Pool
 from relplan import Planner
 import subprocess
 import argparse
@@ -31,6 +32,9 @@ def runquery(query, sql, db, confs, verbose=False):
     costs, ns = zip(*[execute(sql, db, conf) for conf in confs])
     return '%s,%s,%s' % (id, ','.join(map(str, costs)), ','.join(map(str, ns)))
 
+def runquerywrapper(args):
+    return runquery(*args)
+
 if __name__ == '__main__':
     parser = argparse.ArgumentParser(
         description='Use Optiq to get a relational plan from SQL statements.')
@@ -39,6 +43,8 @@ if __name__ == '__main__':
     parser.add_argument('DB', help='SQLite database to use as schema source')
     parser.add_argument('-v', '--verbose', dest='verbose', action='store_true',
         help='Be more verbose (just print out also the configuration files)')
+    parser.add_argument('-t', '--threads', dest='threads', type=int, default=4,
+        help='Number of concurrent threads')
     args = parser.parse_args()
 
     if not os.path.isdir(args.CONF):
@@ -54,6 +60,8 @@ if __name__ == '__main__':
     confs = [os.path.join(args.CONF, c) for c in sorted(os.listdir(args.CONF))]
     logging.info(confs)
 
-    for query in sorted(os.listdir(args.SQL)):
-        with open(os.path.join(args.SQL, query)) as sql:
-            print runquery(query, sql.read(), args.DB, confs, args.verbose)
+    calls = [(query, open(os.path.join(args.SQL, query)).read(), args.DB,
+              confs, args.verbose) for query in sorted(os.listdir(args.SQL))]
+
+    logging.info('Staring execution on %d threads', args.threads)
+    print '\n'.join(Pool(args.threads).map(runquerywrapper, calls))
