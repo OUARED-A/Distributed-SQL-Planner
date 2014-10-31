@@ -37,8 +37,11 @@ def main(args):
 
     print '\n=== Best Plan ==='
     bestplan = planner.get_best_plan(root)
-    print bestplan
-    print root.print_with_plan(bestplan)
+    if bestplan:
+        print bestplan
+        print root.print_with_plan(bestplan)
+    else:
+        print 'No plan allowed. Check the configuration file'
 
 if __name__ == '__main__':
     parser = argparse.ArgumentParser(

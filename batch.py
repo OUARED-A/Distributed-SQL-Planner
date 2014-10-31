@@ -24,11 +24,11 @@ def execute(sql, db, config):
     planner = Planner(config)
     plans = planner.get_plans(root)
     bestplan = planner.get_best_plan(root)
-    return (bestplan.totalcost(), len(plans))
+    return (bestplan.totalcost() if bestplan else float('NaN'), len(plans))
 
 
 def runquery(query, sql, db, confs, verbose=False):
-    id = os.path.splitext(query)[0]
+    id = os.path.splitext(os.path.split(query)[-1])[0]
     costs, ns = zip(*[execute(sql, db, conf) for conf in confs])
     return '%s,%s,%s' % (id, ','.join(map(str, costs)), ','.join(map(str, ns)))
 
