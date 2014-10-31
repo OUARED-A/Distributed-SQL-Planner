@@ -4,11 +4,13 @@ from operator import methodcaller
 from relplan import Planner
 import subprocess
 import argparse
+import logging
 import reltree
 import os.path
 import json
 import sys
 
+logging.basicConfig(level=logging.DEBUG, format='%(message)s')
 jupiter = ['java', '-jar', 'lib/jupiter.jar']
 
 def main(args):
