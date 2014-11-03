@@ -43,6 +43,8 @@ if __name__ == '__main__':
     parser.add_argument('DB', help='SQLite database to use as schema source')
     parser.add_argument('-v', '--verbose', dest='verbose', action='store_true',
         help='Be more verbose (just print out also the configuration files)')
+    parser.add_argument('-u', '--unordered', dest='unord', action='store_true',
+        help='Use unordered output for queries to speed up computation')
     parser.add_argument('-t', '--threads', dest='threads', type=int, default=4,
         help='Number of concurrent threads')
     args = parser.parse_args()
@@ -63,7 +65,9 @@ if __name__ == '__main__':
     logging.info('QUERIES: %s' % queries)
 
     call = [(q, open(q).read(), args.DB, confs, args.verbose) for q in queries]
-
     logging.info('Starting execution on %d threads', args.threads)
-    for result in Pool(args.threads).imap(runquerywrapper, call):
+
+    pool = Pool(args.threads)
+    executer = pool.imap_unordered if args.unord else pool.imap
+    for result in executer(runquerywrapper, call):
         print result
