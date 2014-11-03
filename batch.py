@@ -1,4 +1,4 @@
-#!/usr/bin/env python
+#!/usr/bin/python -u
 
 from multiprocessing import Pool
 from relplan import Planner
