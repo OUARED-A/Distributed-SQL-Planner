@@ -64,5 +64,6 @@ if __name__ == '__main__':
 
     call = [(q, open(q).read(), args.DB, confs, args.verbose) for q in queries]
 
-    logging.info('Staring execution on %d threads', args.threads)
-    print '\n'.join(Pool(args.threads).map(runquerywrapper, call))
+    logging.info('Starting execution on %d threads', args.threads)
+    for result in Pool(args.threads).imap(runquerywrapper, call):
+        print result
